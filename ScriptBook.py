@@ -276,7 +276,7 @@ class ScriptBook(QtGui.QStackedWidget):
     def openFile(self, filename):
         file = QtCore.QFile(filename)
         if not file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(self, "SAX Bookmarks", "Cannot read file %s:\n%s." % (fileName, file.errorString()))
+            QtGui.QMessageBox.warning(self, "ScriptBook", "Cannot read file \n%s:\n." % filename)
             return False
 
         reader = QtXml.QXmlSimpleReader()
