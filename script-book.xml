@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<document description="Test scripture" language="english" entries="3">
+
+  <book name="The first book" document-entry="1" chapters="1">
+    <chapter no="1" verses="1">
+      <vers no="1" text="The first vers in the first chapter in the first book" />
+    </chapter>
+  </book>
+
+  <book name="The second book" document-entry="2" chapters="2">
+    <chapter no="1" verses="1">
+      <vers no="1" text="The first vers in the first chapter in the second book" />
+    </chapter>
+    <chapter no="2" verses="2">
+      <vers no="1" text="The first vers in the first chapter in the second book" />
+      <vers no="2" text="The second vers in the first chapter in the second book" />
+    </chapter>
+  </book>
+
+  <book name="The third book" document-entry="3" chapters="3">
+    <chapter no="1" verses="1">
+      <vers no="1" text="The first vers in the third chapter in the third book" />
+    </chapter>
+    <chapter no="2" verses="2">
+      <vers no="1" text="The first vers in the second chapter in the third book" />
+      <vers no="2" text="The second vers in the second chapter in the third book" />
+    </chapter>
+    <chapter no="3" verses="3">
+      <vers no="1" text="The first vers in the third chapter in the third book" />
+      <vers no="2" text="The second vers in the third chapter in the third book" />
+      <vers no="3" text="The third vers in the third chapter in the third book" />
+    </chapter>
+  </book>
+
+</document>
