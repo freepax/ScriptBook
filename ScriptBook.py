@@ -117,7 +117,7 @@ class ScriptBook(QtGui.QStackedWidget):
         ## Set values for the store/restore settings system
         QtCore.QCoreApplication.setOrganizationName("EMR")
         QtCore.QCoreApplication.setOrganizationDomain("code.rutger.no")
-        QtCore.QCoreApplication.setApplicationName("QmlChatClient")
+        QtCore.QCoreApplication.setApplicationName("ScriptBook")
 
         ## The button controller
         self.buttonController = NavigationController()
@@ -221,10 +221,6 @@ class ScriptBook(QtGui.QStackedWidget):
             self.setCurrentWidget(self.chapterView)
             self.setWindowTitle(str("ScriptBook %s" % self.book.name))
 
-            ## Write the book to settings 
-            settings = QtCore.QSettings()
-            settings.setValue("ScriptBook/book", book)
-
 
     def loadChapter(self, chapter):
         try:
@@ -251,15 +247,21 @@ class ScriptBook(QtGui.QStackedWidget):
         if self.loadChapter(chapter) == True:
             self.setCurrentWidget(self.verseView)
 
-            ## Write the chapter to settings
+            ## Write bookmark to settings
             settings = QtCore.QSettings()
             settings.setValue("ScriptBook/chapter", chapter)
+            settings.setValue("ScriptBook/book", self.book.document_entry)
 
 
     def verseClicked(self, verse):
-        ## Write the verse to settings
+        ## Write the verse to settings (needed ?)
         settings = QtCore.QSettings()
         settings.setValue("ScriptBook/verse", verse)
+
+        ## Shoud give pop up options here
+        ## 1. Save bookmark
+        ## 2. Save note
+        ## 3. Higlight (set different font and background color)
 
 
     def buttonClicked(self, button):
@@ -315,5 +317,6 @@ if __name__ == "__main__":
 
     scriptBook = ScriptBook()
     #scriptBook.openFile('script-book.xml')
+    #scriptBook.openFile('king-james-english.xml')
 
     sys.exit(app.exec_())
