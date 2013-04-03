@@ -27,36 +27,31 @@ Item {
         delegate: Component {
 
             Rectangle {
-                width: pythonList.width; height: versText.paintedHeight + 10; color: "darkgreen"
+                width: pythonList.width; height: versText.paintedHeight + 40; color: "darkgreen"
 
                 Rectangle {
                     id: chapterRect
                     color: index % 2 ? "#111" : "#222"
                     border.color: "black"; border.width: 2
-                    width: parent.width; height: versText.paintedHeight + 10; radius: 6
+                    width: parent.width; height: versText.paintedHeight + 40; radius: 6
 
                     Text {
                         id: chapterText
-                        text: model.chapterItem.no
+                        text: "Chapter  " + model.chapterItem.no
                         color: "white"
-                        width: 30
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: chapterRect.left; right: versText.left; leftMargin: 5
-                        }
+                        width: parent.width - 10; height: 30
+                        font.pointSize: 11
+                        anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; }
                     }
 
                     Text {
                         id: versText
-                        //elide: Text.ElideRight
                         wrapMode: Text.Wrap
                         text: model.chapterItem.text
                         color: "white"
-                        width: parent.width - 30
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: chapterText.right; right: chapterRect.right; rightMargin: 5
-                        }
+                        width: parent.width - 10
+                        font.pointSize: 10
+                        anchors { horizontalCenter: parent.horizontalCenter; top: chapterText.bottom }
                     }
 
                     MouseArea {

@@ -27,53 +27,31 @@ Item {
         delegate: Component {
 
             Rectangle {
-                width: pythonList.width; height: 40; color: "darkgreen"
+                width: pythonList.width; height: nameText.paintedHeight + 40; color: "darkgreen"
 
                 Rectangle {
                     id: bookRect
                     color: index % 2 ? "#111" : "#222"
                     border.color: "black"; border.width: 2
-                    width: parent.width; height: parent.height; radius: 6
+                    width: parent.width; height: nameText.paintedHeight + 40; radius: 6
 
                     Text {
                         id: entryText
-                        width: 30;
-
-                        text: model.bookItem.entry
+                        text: "Book " + model.bookItem.entry + "    (" + model.bookItem.chapters + " chapters)"
                         color: "white"
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: bookRect.left
-                            right: nameText.left
-                            leftMargin: 5
-                        }
+                        width: parent.width - 10; height: 30
+                        font.pointSize: 10
+                        anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; }
                     }
 
                     Text {
                         id: nameText
-                        width: bookRect.width - 60
-                        elide: Text.ElideRight
+                        wrapMode: Text.Wrap
                         text: model.bookItem.name
                         color: "white"
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: entryText.right
-                            right: chaptersText.left
-                        }
-                    }
-
-                    Text {
-                        id: chaptersText
-                        width: 30
-                        horizontalAlignment: Text.AlignRight
-                        text: model.bookItem.chapters
-                        color: "white"
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: nameText.right
-                            right: bookRect.right
-                            rightMargin: 5
-                        }
+                        width: parent.width - 10
+                        font.pointSize: 10
+                        anchors { horizontalCenter: parent.horizontalCenter; top: entryText.bottom }
                     }
 
                     MouseArea {

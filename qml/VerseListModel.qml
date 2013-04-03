@@ -42,7 +42,8 @@ Item {
                         wrapMode: Text.Wrap
                         text: model.verseItem.text
                         color: "white"
-                        width: parent.width
+                        width: parent.width - 10
+                        font.pointSize: 10
                         anchors {
                             verticalCenter: parent.verticalCenter
                             left: parent.left; right: parent.right;
