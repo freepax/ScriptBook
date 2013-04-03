@@ -24,10 +24,8 @@ class Chapter():
         self.__comments = []
         self.no = int(0)
         self.verses = int(0)
-        #print 'Chapter::__init__ verses len', self.__verses.__len__()
 
     def vers(self):
-        #print 'Chapter::vers verses length', self.__verses.__len__()
         return self.__verses
 
     def appendVers(self, vers):
@@ -35,6 +33,7 @@ class Chapter():
             self.__verses.append(vers)
 
     def printVerses(self):
+        print 'Chapter', self.no
         for i in self.__verses:
             i.printVers()
 
@@ -51,7 +50,6 @@ class Book():
         self.name = str("")
         self.document_entry = int(0)
         self.chapters = int(0)
-        #print 'Book::__init__ chapter len', self.__chapters.__len__()
 
     def append(self, chapter):
         if chapter.verses != 0:
@@ -61,6 +59,7 @@ class Book():
         return self.__chapters
     
     def printBook(self):
+        print 'Book', self.name
         for i in self.__chapters:
             i.printVerses()
 
@@ -86,7 +85,7 @@ class Document():
         return self.__books
 
     def printDocument(self):
-        #print "Document::printDocument __books.__len__()", self.__books.__len__()
+        print 'Document', self.description
         for i in self.__books:
             i.printBook()
 

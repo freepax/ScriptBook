@@ -46,5 +46,4 @@ class ChapterController(QtCore.QObject):
     @QtCore.Slot(QtCore.QObject, QtCore.QObject)
     def clicked(self, model, wrapper):
         global view, __doc__
-        print "ChapterController::clicked: no", wrapper._no(), "verses", wrapper._verses()
         self.chapterClicked.emit(int(wrapper._no()))

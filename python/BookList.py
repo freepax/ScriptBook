@@ -46,5 +46,4 @@ class BookController(QtCore.QObject):
     @QtCore.Slot(QtCore.QObject, QtCore.QObject)
     def clicked(self, model, wrapper):
         global view, __doc__
-        print "BookController::clicked: entry", wrapper._entry(), "name", wrapper._name(), "chapters", wrapper._chapters()
         self.bookClicked.emit(int(wrapper._entry()))

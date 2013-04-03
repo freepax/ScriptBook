@@ -41,5 +41,4 @@ class VerseController(QtCore.QObject):
     @QtCore.Slot(QtCore.QObject, QtCore.QObject)
     def clicked(self, model, wrapper):
         global view, __doc__
-        print "VerseController::clicked: no", wrapper._number(), "text", wrapper._text()
         self.verseClicked.emit(int(wrapper._number()))
