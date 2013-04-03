@@ -14,7 +14,7 @@ import Document
 import BookList
 import ChapterList
 import VerseList
-
+import DocumentHandler
 
 
 class NavigationController(QtCore.QObject):
@@ -27,92 +27,11 @@ class NavigationController(QtCore.QObject):
         self.buttonClicked.emit(int(button))
 
 
-class DocumentHandler(QtXml.QXmlDefaultHandler):
-    def __init__(self):
-        super(DocumentHandler, self).__init__()
-
-        self.document = Document.Document()
-        self.book = Document.Book()
-        self.chapter = Document.Chapter()
-        #self.comment = Document.Comment()
-        self.vers = Document.Vers()
-
-        self.errorStr = ''
-        self.item = None
-        self.documentStartTag = False
-
-
-    def startElement(self, namespaceURI, localName, qName, attributes):
-        if not self.documentStartTag and qName != 'document':
-            self.errorStr = "The file is not an ScriptBook file."
-            return False
-
-        if qName == 'document':
-            self.document = Document.Document()
-            self.document.description = attributes.value('description')
-            self.document.language = attributes.value('language')
-            self.document.entries = int(attributes.value('entries'))
-            self.documentStartTag = True
-
-        elif qName == 'book':
-            self.book.name = attributes.value('name')
-            self.book.document_entry = int(attributes.value('document-entry'))
-            self.book.chapters = int(attributes.value('chapters'))
-
-        elif qName == 'chapter':
-            self.chapter.no = attributes.value('no')
-            self.chapter.verses = attributes.value('verses')
-
-        #elif qName == 'comment':
-            #print "DEBUG COMMENT", attributes.value('text')
-
-        elif qName == 'vers':
-            self.vers.number = attributes.value('no')
-            self.vers.text = attributes.value('text')
-
-        return True
-
-
-    def endElement(self, namespaceURI, localName, qName):
-        if qName == 'document':
-            self.documentStartTag = False
-
-        elif qName == 'book':
-            self.document.append(self.book)
-            self.book = Document.Book()
-
-        elif qName == 'chapter':
-            self.book.append(self.chapter)
-            self.chapter = Document.Chapter()
-
-        #elif qName == 'comment':
-            #print "END COMMENT"
-            #self.comment = Document.Comment()
-
-        elif qName == 'vers':
-            self.chapter.appendVers(self.vers)
-            self.vers = Document.Vers()
-
-        return True
-
-
-    def fatalError(self, exception):
-        QtGui.QMessageBox.information(self.treeWidget.window(),
-                "ScriptBook", "Parse error at line %d, column %d:\n%s" % (exception.lineNumber(), exception.columnNumber(), exception.message()))
-        return False
-
-    def errorString(self):
-        return self.errorStr
-
-    def createChildItem(self, tagName):
-        return childItem
-
-
 class ScriptBook(QtGui.QStackedWidget):
     def __init__(self, parent=None):
         super(ScriptBook, self).__init__(parent)
         self.document = Document.Document()
-        self.handler = DocumentHandler()
+        self.handler = DocumentHandler.DocumentHandler()
 
         ## Set values for the store/restore settings system
         QtCore.QCoreApplication.setOrganizationName("EMR")
@@ -195,7 +114,7 @@ class ScriptBook(QtGui.QStackedWidget):
                         self.setCurrentWidget(self.verseView)
                 elif book != None and self.loadBook(int(book)) == True:
                     self.setCurrentWidget(self.chapterView)
-    ##################################################################################################
+
 
     def loadBook(self, book):
         try:
