@@ -38,7 +38,7 @@ Item {
                     Text {
                         id: chapterText
                         text: "Chapter  " + model.chapterItem.no
-                        color: "white"
+                        color: "steelblue"
                         width: parent.width - 10; height: 30
                         font.pointSize: 11
                         anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; }

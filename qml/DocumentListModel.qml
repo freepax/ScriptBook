@@ -43,7 +43,7 @@ Item {
                         text: model.documentItem.filename
                         color: "white"
                         width: parent.width
-                        font.pointSize: 13
+                        font.pointSize: 14
                         anchors {
                             verticalCenter: parent.verticalCenter
                             left: parent.left; right: parent.right;
