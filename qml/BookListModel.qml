@@ -27,7 +27,7 @@ Item {
         delegate: Component {
 
             Rectangle {
-                width: pythonList.width; height: nameText.paintedHeight + 40; color: "darkgreen"
+                width: pythonList.width; height: nameText.paintedHeight + 40; color: "steelblue"
 
                 Rectangle {
                     id: bookRect

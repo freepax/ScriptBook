@@ -28,7 +28,7 @@ Item {
 
             Rectangle {
                 id: listrect
-                color: "darkgray"
+                color: "steelblue"
                 width: pythonList.width; height: documentText.paintedHeight + 10
 
                 Rectangle {
