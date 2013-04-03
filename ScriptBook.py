@@ -15,6 +15,7 @@ import BookList
 import ChapterList
 import VerseList
 import DocumentHandler
+import DocumentList
 
 
 class NavigationController(QtCore.QObject):
@@ -47,6 +48,18 @@ class ScriptBook(QtGui.QStackedWidget):
 
 
     def setupUI(self):
+        ## The document view, controller and  model
+        self.documentView = QtDeclarative.QDeclarativeView()
+        self.documentView.setWindowTitle('Documents')
+        self.documentView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
+        self.documentController = DocumentList.DocumentController()
+        self.documentController.documentClicked.connect(self.documentClicked)
+        self.documentView.rootContext().setContextProperty('controller', self.documentController)
+        self.documentView.rootContext().setContextProperty('buttonController', self.buttonController)
+        self.documentList = DocumentList.DocumentModel([])
+        self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
+        self.documentView.setSource(QtCore.QUrl('qml/DocumentListModel.qml'))
+
         ## The book view, controller and  model
         self.bookView = QtDeclarative.QDeclarativeView()
         self.bookView.setWindowTitle('Books')
@@ -84,6 +97,7 @@ class ScriptBook(QtGui.QStackedWidget):
         self.verseView.setSource(QtCore.QUrl('qml/VerseListModel.qml'))
 
         ## Add the book, chapter and verse view's
+        self.addWidget(self.documentView)
         self.addWidget(self.bookView)
         self.addWidget(self.chapterView)
         self.addWidget(self.verseView)
@@ -95,6 +109,23 @@ class ScriptBook(QtGui.QStackedWidget):
 
         ## Load settings
         self.loadSettings()
+
+        self.loadDocuments()
+
+
+    def loadDocuments(self):
+        documentListItems = []        
+        dirFilter = []
+        dirFilter.append('*.xml')
+        directory = QtCore.QDir()
+        dirList = directory.entryList(dirFilter)
+        if len(dirList) > 0:
+            for fileName in dirList:
+                documentListItems.append(DocumentList.DocumentListWrapper(fileName))
+
+        self.documentList = DocumentList.DocumentModel(documentListItems)
+        self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
+
 
 
     def loadSettings(self):
@@ -133,6 +164,12 @@ class ScriptBook(QtGui.QStackedWidget):
             return True
         except:
             return False
+
+
+    def documentClicked(self, document):
+        print 'documentClicked', document
+        if self.openFile(document) == True:
+            self.setCurrentWidget(self.bookView)
 
 
     def bookClicked(self, book):
@@ -185,7 +222,8 @@ class ScriptBook(QtGui.QStackedWidget):
 
     def buttonClicked(self, button):
         if button == 0:
-            print 'ScriptBook::buttonClicked Docs', button
+            self.loadDocuments()
+            self.setCurrentWidget(self.documentView)
         elif button == 1:
             self.setCurrentWidget(self.bookView)
         elif button == 2:
@@ -205,15 +243,16 @@ class ScriptBook(QtGui.QStackedWidget):
         reader.setErrorHandler(self.handler)
 
         xmlInputSource = QtXml.QXmlInputSource(file)
-        if reader.parse(xmlInputSource):
-            print 'File loaded'
+
+        if reader.parse(xmlInputSource) == False:
+            QtGui.QMessageBox.warning(self, "ScriptBook", "Cannot read file \n%s:\n." % filename)
+            return False
 
         # document stuff here
         self.document = self.handler.document
 
         bookListItems = []
 
-        print "Document entries", self.document.entries
         books = self.document.books()
         for b in books:
             bookListItems.append(BookList.BookListWrapper(b.document_entry, b.name, b.chapters))

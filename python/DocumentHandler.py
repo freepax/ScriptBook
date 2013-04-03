@@ -76,8 +76,6 @@ class DocumentHandler(QtXml.QXmlDefaultHandler):
 
 
     def fatalError(self, exception):
-        QtGui.QMessageBox.information(self.treeWidget.window(),
-                "ScriptBook", "Parse error at line %d, column %d:\n%s" % (exception.lineNumber(), exception.columnNumber(), exception.message()))
         return False
 
     def errorString(self):
