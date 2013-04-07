@@ -182,9 +182,14 @@ class ScriptBook(QtGui.QStackedWidget):
 
 
     def toolsClicked(self, entry):
-        print 'toolsClicked ', entry
         if int(entry) == 0:
             self.setCurrentWidget(self.ftpLoginView)
+        elif int(entry) == 1:
+            print 'toolsClicked: Font settings - not implemented'
+        elif int(entry) == 2:
+            print 'toolsClicked: Bookmars - not implemented'
+        else:
+            print 'toolsClicked: unknonw'
 
 
     def ftpConnect(self, host, port):
@@ -247,24 +252,7 @@ class ScriptBook(QtGui.QStackedWidget):
 
 
     def fileClicked(self, name):
-        print 'fileClicked'
-
-
-    def loadDocuments(self):
-        documentListItems = []        
-        dirFilter = []
-        dirFilter.append('*.xml')
-        directory = QtCore.QDir()
-        dirList = directory.entryList(dirFilter)
-        if len(dirList) > 0:
-            count = int(1)
-            for entry in directory.entryInfoList(dirFilter):
-                documentListItems.append(DocumentList.DocumentListWrapper(str(count), str(entry.size()), str(entry.fileName())))
-                count += 1
-
-        self.documentList = DocumentList.DocumentModel(documentListItems)
-        self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
-
+        print 'fileClicked', name
 
 
     def loadSettings(self):
@@ -299,6 +287,28 @@ class ScriptBook(QtGui.QStackedWidget):
                     self.setCurrentWidget(self.chapterView)
 
 
+    def loadDocuments(self):
+        documentListItems = []        
+        dirFilter = []
+        dirFilter.append('*.xml')
+        directory = QtCore.QDir()
+        dirList = directory.entryList(dirFilter)
+        if len(dirList) > 0:
+            count = int(1)
+            for entry in directory.entryInfoList(dirFilter):
+                documentListItems.append(DocumentList.DocumentListWrapper(str(count), str(entry.size()), str(entry.fileName())))
+                count += 1
+
+        self.documentList = DocumentList.DocumentModel(documentListItems)
+        self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
+
+
+    def documentClicked(self, document):
+        print 'documentClicked', document
+        if self.openFile(document) == True:
+            self.setCurrentWidget(self.bookView)
+
+
     def loadBook(self, book):
         try:
             chapterListItems = []
@@ -316,12 +326,6 @@ class ScriptBook(QtGui.QStackedWidget):
             return True
         except:
             return False
-
-
-    def documentClicked(self, document):
-        print 'documentClicked', document
-        if self.openFile(document) == True:
-            self.setCurrentWidget(self.bookView)
 
 
     def bookClicked(self, book):
