@@ -40,7 +40,7 @@ Rectangle {
 
     TextInput {
         id: textInput
-        onTextChanged: console.log("textInput got", textInput)
+        //onTextChanged: console.log("textInput got", textInput)
         horizontalAlignment: TextInput.AlignLeft
         height: parent.height - 2; width: parent.width - 10
         anchors.centerIn: parent
