@@ -426,9 +426,5 @@ class ScriptBook(QtGui.QStackedWidget):
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
-
     scriptBook = ScriptBook()
-    #scriptBook.openFile('script-book.xml')
-    #scriptBook.openFile('king-james-english.xml')
-
     sys.exit(app.exec_())
