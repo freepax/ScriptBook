@@ -18,15 +18,24 @@ class DocumentModel(QtCore.QAbstractListModel):
 
 
 class DocumentListWrapper(QtCore.QObject):
-    def __init__(self, filename):
+    def __init__(self, entry, filesize, filename):
         QtCore.QObject.__init__(self)
+        self.__entry = entry
         self.__filename = filename
+        self.__filesize = filesize
+
+    def _entry(self):
+        return self.__entry
 
     def _fileName(self):
         return self.__filename
 
-    clicked = QtCore.Signal()
+    def _fileSize(self):
+        return self.__filesize
 
+    clicked = QtCore.Signal()
+    entry = QtCore.Property(unicode, _entry, notify=clicked)
+    filesize = QtCore.Property(unicode, _fileSize, notify=clicked)
     filename = QtCore.Property(unicode, _fileName, notify=clicked)
 
 

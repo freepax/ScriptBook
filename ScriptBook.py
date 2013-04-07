@@ -14,8 +14,10 @@ import Document
 import BookList
 import ChapterList
 import VerseList
-import DocumentHandler
+import DocumentXmlHandler
 import DocumentList
+import ToolsController
+import FtpController
 
 
 class NavigationController(QtCore.QObject):
@@ -32,7 +34,7 @@ class ScriptBook(QtGui.QStackedWidget):
     def __init__(self, parent=None):
         super(ScriptBook, self).__init__(parent)
         self.document = Document.Document()
-        self.handler = DocumentHandler.DocumentHandler()
+        self.handler = DocumentXmlHandler.DocumentXmlHandler()
 
         ## Set values for the store/restore settings system
         QtCore.QCoreApplication.setOrganizationName("EMR")
@@ -42,6 +44,16 @@ class ScriptBook(QtGui.QStackedWidget):
         ## The button controller
         self.buttonController = NavigationController()
         self.buttonController.buttonClicked.connect(self.buttonClicked)
+
+        ## The tools controller
+        self.toolsController = ToolsController.ToolsController()
+        self.toolsController.toolsClicked.connect(self.toolsClicked)
+
+        ## The ftp controller
+        self.ftpController = FtpController.FtpController()
+        self.ftpController.connectSignal.connect(self.ftpConnect)
+        self.ftpController.disconnectSignal.connect(self.ftpDisconnect)
+        self.ftpController.cancelSignal.connect(self.ftpCancel)
 
         ## Set up UI components
         self.setupUI()
@@ -86,8 +98,9 @@ class ScriptBook(QtGui.QStackedWidget):
 
         ## The chapter view, controller and  model
         self.verseView = QtDeclarative.QDeclarativeView()
-        self.verseView.setWindowTitle('Chapter')
+        self.verseView.setWindowTitle('Verse')
         self.verseView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
+
         self.verseController = VerseList.VerseController()
         self.verseController.verseClicked.connect(self.verseClicked)
         self.verseView.rootContext().setContextProperty('controller', self.verseController)
@@ -96,22 +109,60 @@ class ScriptBook(QtGui.QStackedWidget):
         self.verseView.rootContext().setContextProperty('verseListModel', self.verseList)
         self.verseView.setSource(QtCore.QUrl('qml/VerseListModel.qml'))
 
+        ## The tools view
+        self.toolsView = QtDeclarative.QDeclarativeView()
+        self.toolsView.setWindowTitle('Tools')
+        self.toolsView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
+        self.toolsView.rootContext().setContextProperty('buttonController', self.buttonController)
+        self.toolsView.rootContext().setContextProperty('toolsController', self.toolsController)
+        self.toolsView.setSource(QtCore.QUrl('qml/Tools.qml'))
+
+        ## The ftp view
+        self.ftpConnectView = QtDeclarative.QDeclarativeView()
+        self.ftpConnectView.setWindowTitle('Ftp connect')
+        self.ftpConnectView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
+        self.ftpConnectView.rootContext().setContextProperty('buttonController', self.buttonController)
+        self.ftpConnectView.rootContext().setContextProperty('ftpController', self.ftpController)
+        self.ftpConnectView.setSource(QtCore.QUrl('qml/FtpLogin.qml'))
+
+
         ## Add the book, chapter and verse view's
         self.addWidget(self.documentView)
         self.addWidget(self.bookView)
         self.addWidget(self.chapterView)
         self.addWidget(self.verseView)
+        self.addWidget(self.ftpConnectView)
+        self.addWidget(self.toolsView)
+
 
         ## Set window title, set geometry and show
         self.setWindowTitle('ScriptBook')
-        self.setGeometry(400, 200, 300, 450)
+        self.setGeometry(400, 200, 280, 430)
         self.show()
 
         ## Load settings
         self.loadSettings()
 
+        ## Load documents
         self.loadDocuments()
 
+
+    def toolsClicked(self, entry):
+        print 'toolsClicked ', entry
+        if int(entry) == 0:
+            self.setCurrentWidget(self.ftpConnectView)
+
+    def ftpConnect(self, host, port):
+        print 'ftpConnect', host, port
+
+
+    def ftpDisconnect(self):
+        print 'ftpDisconnect'
+
+
+    def ftpCancel(self):
+        print 'ftpCancel'
+        #self.setCurrentWidget(self.ftpConnectView)
 
     def loadDocuments(self):
         documentListItems = []        
@@ -120,8 +171,10 @@ class ScriptBook(QtGui.QStackedWidget):
         directory = QtCore.QDir()
         dirList = directory.entryList(dirFilter)
         if len(dirList) > 0:
-            for fileName in dirList:
-                documentListItems.append(DocumentList.DocumentListWrapper(fileName))
+            count = int(1)
+            for entry in directory.entryInfoList(dirFilter):
+                documentListItems.append(DocumentList.DocumentListWrapper(str(count), str(entry.size()), str(entry.fileName())))
+                count += 1
 
         self.documentList = DocumentList.DocumentModel(documentListItems)
         self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
@@ -131,10 +184,23 @@ class ScriptBook(QtGui.QStackedWidget):
     def loadSettings(self):
         ## Read the settings
         settings = QtCore.QSettings()
+
+        ## The ftp host and port
+        self.ftpHost = settings.value("ScriptBook/ftpHost", "localhost")
+        self.ftpPort = settings.value("ScriptBook/ftpPort", "21")
+
+        ## Update the view through the controller
+        self.ftpController.setHost(self.ftpHost)
+        self.ftpController.onHostChanged.emit(str(self.ftpHost))
+        self.ftpController.setPort(self.ftpPort)
+        self.ftpController.onPortChanged.emit(str(self.ftpPort))
+
+
         document = settings.value("ScriptBook/document")
         book = settings.value("ScriptBook/book")
         chapter = settings.value("ScriptBook/chapter")
         vers = settings.value("ScriptBook/vers")
+
 
         ## Check if we can load something
         if document != None:
@@ -229,7 +295,9 @@ class ScriptBook(QtGui.QStackedWidget):
         elif button == 2:
             self.setCurrentWidget(self.chapterView)
         elif button == 3:
-            print 'ScriptBook::buttonClicked Tools', button
+            self.setCurrentWidget(self.verseView)
+        elif button == 4:
+            self.setCurrentWidget(self.toolsView)
 
 
     def openFile(self, filename):

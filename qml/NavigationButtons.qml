@@ -3,8 +3,16 @@ import Qt 4.7
 
 Rectangle {
     id: buttonBox
-    property color textColor: "white"
 
+    function button_height() {
+        return 40
+    }
+
+    function button_width() {
+        return width / 5
+    }
+
+    property color textColor: "white"
     signal buttonClicked(int button)
 
     Row {
@@ -29,11 +37,18 @@ Rectangle {
             onTrigger: buttonBox.buttonClicked(2)
         }
 
+        PushButton { /// Gets you back to the chapter in the book
+            id: versButton
+            text: "Vers"; textColor: buttonBox.textColor
+            height: button_height(); width: button_width(); radius: 4
+            onTrigger: buttonBox.buttonClicked(3)
+        }
+
         PushButton { /// Show more options
             id: settingsButton
             text: "Tools"; textColor: buttonBox.textColor
             height: button_height(); width: button_width(); radius: 4
-            onTrigger: buttonBox.buttonClicked(3)
+            onTrigger: buttonBox.buttonClicked(4)
         }
     }
 }

@@ -3,16 +3,9 @@ import Qt 4.7
 
 Item {
 
-    function button_height() {
-        return 40
-    }
-
-    function button_width() {
-        return width / 4
-    }
-
     NavigationButtons {
         id: buttonRow
+        z: 1
         anchors.top: parent.top
         width: parent.width; height: button_height()
         onButtonClicked: buttonController.buttonClicked(button)
@@ -21,7 +14,7 @@ Item {
     ListView {
         id: pythonList
         model: bookListModel
-        width: parent.width; height: parent.height - button_height()
+        width: parent.width; height: parent.height - buttonRow.button_height()
         anchors.top: buttonRow.bottom
 
         delegate: Component {
