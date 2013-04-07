@@ -21,10 +21,8 @@ class FileListWrapper(QtCore.QObject):
     def __init__(self, filename):
         QtCore.QObject.__init__(self)
         self.__filename = filename
-        print '_filename init', self.__filename
 
     def _fileName(self):
-        print '_filename get', self.__filename
         return self.__filename
 
     clicked = QtCore.Signal()
