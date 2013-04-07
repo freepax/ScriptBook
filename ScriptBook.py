@@ -18,6 +18,9 @@ import DocumentXmlHandler
 import DocumentList
 import ToolsController
 import FtpController
+import FtpEntryListController
+import DirectoryList
+import FileList
 
 
 class NavigationController(QtCore.QObject):
@@ -49,11 +52,15 @@ class ScriptBook(QtGui.QStackedWidget):
         self.toolsController = ToolsController.ToolsController()
         self.toolsController.toolsClicked.connect(self.toolsClicked)
 
-        ## The ftp controller
+        ## The ftp login controller
         self.ftpController = FtpController.FtpController()
         self.ftpController.connectSignal.connect(self.ftpConnect)
-        self.ftpController.disconnectSignal.connect(self.ftpDisconnect)
         self.ftpController.cancelSignal.connect(self.ftpCancel)
+
+        ## The ftp entry list controller
+        self.ftpEntryListController = FtpEntryListController.FtpEntryListController()
+        self.ftpEntryListController.ftpDirectoryListDone.connect(self.ftpDirectoryListDone)
+        self.ftpEntryListController.ftpFileListDone.connect(self.ftpFileListDone)
 
         ## Set up UI components
         self.setupUI()
@@ -71,6 +78,7 @@ class ScriptBook(QtGui.QStackedWidget):
         self.documentList = DocumentList.DocumentModel([])
         self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
         self.documentView.setSource(QtCore.QUrl('qml/DocumentListModel.qml'))
+
 
         ## The book view, controller and  model
         self.bookView = QtDeclarative.QDeclarativeView()
@@ -100,7 +108,6 @@ class ScriptBook(QtGui.QStackedWidget):
         self.verseView = QtDeclarative.QDeclarativeView()
         self.verseView.setWindowTitle('Verse')
         self.verseView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-
         self.verseController = VerseList.VerseController()
         self.verseController.verseClicked.connect(self.verseClicked)
         self.verseView.rootContext().setContextProperty('controller', self.verseController)
@@ -117,13 +124,38 @@ class ScriptBook(QtGui.QStackedWidget):
         self.toolsView.rootContext().setContextProperty('toolsController', self.toolsController)
         self.toolsView.setSource(QtCore.QUrl('qml/Tools.qml'))
 
-        ## The ftp view
-        self.ftpConnectView = QtDeclarative.QDeclarativeView()
-        self.ftpConnectView.setWindowTitle('Ftp connect')
-        self.ftpConnectView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-        self.ftpConnectView.rootContext().setContextProperty('buttonController', self.buttonController)
-        self.ftpConnectView.rootContext().setContextProperty('ftpController', self.ftpController)
-        self.ftpConnectView.setSource(QtCore.QUrl('qml/FtpLogin.qml'))
+        ## The ftp login view
+        self.ftpLoginView = QtDeclarative.QDeclarativeView()
+        self.ftpLoginView.setWindowTitle('Ftp login')
+        self.ftpLoginView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
+        self.ftpLoginView.rootContext().setContextProperty('buttonController', self.buttonController)
+        self.ftpLoginView.rootContext().setContextProperty('ftpController', self.ftpController)
+        self.ftpLoginView.setSource(QtCore.QUrl('qml/FtpLogin.qml'))
+
+        ## The ftp directory view
+        self.directoryView = QtDeclarative.QDeclarativeView()
+        self.directoryView.setWindowTitle('Ftp directories')
+        self.directoryView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
+        self.directoryController = DirectoryList.DirectoryController()
+        self.directoryController.directoryClicked.connect(self.directoryClicked)
+        self.directoryView.rootContext().setContextProperty('controller', self.directoryController)
+        self.directoryList = DirectoryList.DirectoryModel([])
+        self.directoryView.rootContext().setContextProperty('directoryListModel', self.directoryList)
+        self.directoryView.rootContext().setContextProperty('ftpController', self.ftpController)
+        self.directoryView.setSource(QtCore.QUrl('qml/FtpDirectoryListModel.qml'))
+
+
+        ## The ftp directory view
+        self.fileView = QtDeclarative.QDeclarativeView()
+        self.fileView.setWindowTitle('Ftp xml files')
+        self.fileView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
+        self.fileController = FileList.FileController()
+        self.fileController.fileClicked.connect(self.fileClicked)
+        self.fileView.rootContext().setContextProperty('controller', self.fileController)
+        self.fileList = FileList.FileModel([])
+        self.fileView.rootContext().setContextProperty('fileListModel', self.fileList)
+        self.fileView.rootContext().setContextProperty('ftpController', self.ftpController)
+        self.fileView.setSource(QtCore.QUrl('qml/FtpFileListModel.qml'))
 
 
         ## Add the book, chapter and verse view's
@@ -131,7 +163,9 @@ class ScriptBook(QtGui.QStackedWidget):
         self.addWidget(self.bookView)
         self.addWidget(self.chapterView)
         self.addWidget(self.verseView)
-        self.addWidget(self.ftpConnectView)
+        self.addWidget(self.ftpLoginView)
+        self.addWidget(self.directoryView)
+        self.addWidget(self.fileView)
         self.addWidget(self.toolsView)
 
 
@@ -150,19 +184,64 @@ class ScriptBook(QtGui.QStackedWidget):
     def toolsClicked(self, entry):
         print 'toolsClicked ', entry
         if int(entry) == 0:
-            self.setCurrentWidget(self.ftpConnectView)
+            self.setCurrentWidget(self.ftpLoginView)
+
 
     def ftpConnect(self, host, port):
-        print 'ftpConnect', host, port
-
-
-    def ftpDisconnect(self):
-        print 'ftpDisconnect'
-
+        self.ftpEntryListController.setHostPort(host, port)
+        self.ftpEntryListController.setDirectory(".")
+        self.ftpDirectoryListRequest()
 
     def ftpCancel(self):
         print 'ftpCancel'
         self.setCurrentWidget(self.toolsView)
+
+
+    def ftpDirectoryListRequest(self):
+        print 'ftpDirectoryListRequest'
+        self.ftpEntryListController.directoryList()
+
+
+    def ftpDirectoryListDone(self):
+        print 'ftpDirectoryListDone'
+        directoryListItems = []
+        directories = self.ftpEntryListController.list()
+        #print 'directories', directories
+        if len(directories) > int(0):
+            for d in directories:
+                directoryListItems.append(DirectoryList.DirectoryListWrapper(str(d)))
+                print d
+
+            self.directoryList = DirectoryList.DirectoryModel(directoryListItems)
+            self.directoryView.rootContext().setContextProperty('directoryListModel', self.directoryList)
+            self.setCurrentWidget(self.directoryView)
+
+
+    def directoryClicked(self, name):
+        print 'directoryClicked', name
+        self.ftpEntryListController.setDirectory(name)
+        self.ftpEntryListController.fileList()
+
+
+    def ftpFileListDone(self):
+        print 'ftpFileListDone'
+        fileListItems = []
+        files = self.ftpEntryListController.list()
+        if len(files) > int(0):
+            print 'Directory contains', len(files), "entries"
+            for f in files:
+                fileListItems.append(FileList.FileListWrapper(str(f)))
+                print f
+
+            self.fileList = FileList.FileModel(fileListItems)
+            self.fileView.rootContext().setContextProperty('fileListModel', self.fileList)
+            self.setCurrentWidget(self.fileView)
+
+
+
+    def fileClicked(self, name):
+        print 'fileClicked'
+
 
     def loadDocuments(self):
         documentListItems = []        

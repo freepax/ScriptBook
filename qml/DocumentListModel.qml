@@ -23,6 +23,7 @@ Item {
             Rectangle {
                 id: listrect
                 width: pythonList.width; height: documentText.paintedHeight + 40; color: "steelblue"
+
                 Rectangle {
                     id: versrect
                     color: index % 2 ? "#111" : "#222"

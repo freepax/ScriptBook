@@ -31,7 +31,4 @@ class FtpController(QtCore.QObject):
     port = QtCore.Property(str, getPort, setPort, notify=onPortChanged)
 
     connectSignal = QtCore.Signal(str, str)
-    disconnectSignal = QtCore.Signal()
     cancelSignal = QtCore.Signal()
-
-

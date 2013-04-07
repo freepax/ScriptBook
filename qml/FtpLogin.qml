@@ -4,6 +4,7 @@ import Qt 4.7
 Rectangle {
     id: root
     color: "black"
+
     ScriptBookGradients { id: cg }
 
     property alias hostText: hostEdit.inputText
