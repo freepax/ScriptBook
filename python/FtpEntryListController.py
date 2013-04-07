@@ -67,10 +67,10 @@ class FtpEntryListController(QtCore.QObject):
 
 
     def stateChanged(self, arg):
-        print 'stateChanged', arg, self._command
+        #print 'stateChanged', arg, self._command
         if self.ftp.state() == QtNetwork.QFtp.Connected:
             ## Connected - get ftp listing 
-            print 'stateChanged: connected'
+            #print 'stateChanged: connected'
             if self._command == 0:
                 self._state = int(0)
                 self._commandID = self.ftp.cd(self._directory)
@@ -95,19 +95,18 @@ class FtpEntryListController(QtCore.QObject):
     def commandStarted(self, arg):
         if arg == self._commandID:
             self._list = []
-            print 'commandStarted: commandId', self._commandID
+            #print 'commandStarted: commandId', self._commandID
 
 
     def commandFinished(self, arg):
         if arg == self._commandID:
-            print 'commandFinished: ID match'
+            #print 'commandFinished: ID match'
             ## Directory list
             if self._command == int(0):
                 if self._state == int(0):
                     self._state = 1
                     self._commandID = self.ftp.list()
                 elif self._state == int(1):
-                    print 'directorylistdone len', len(self._list)
                     self._state = -1
                     self.disconnectSlot()
                 else:
@@ -120,7 +119,6 @@ class FtpEntryListController(QtCore.QObject):
                     self._state = 1
                     self._commandID = self.ftp.list()
                 elif self._state == int(1):
-                    print 'filelistdone'
                     self._state = -1
                     self.disconnectSlot()
                 else:
@@ -141,11 +139,11 @@ class FtpEntryListController(QtCore.QObject):
     def listInfo(self, info):
         if info.isDir() == True:
             if self._command == int(0):
-                print 'DIRECTORY', info.name()
+                #print 'DIRECTORY', info.name()
                 self._list.append(info.name())
         elif info.isFile() == True:
             if self._command == int(1):
                 filename = info.name()
                 if filename.split('.')[1] == 'xml':
-                    print 'XML FILE', info.name()
+                    #print 'XML FILE', info.name()
                     self._list.append(filename)
