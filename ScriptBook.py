@@ -192,9 +192,16 @@ class ScriptBook(QtGui.QStackedWidget):
         self.ftpEntryListController.setDirectory(".")
         self.ftpDirectoryListRequest()
 
+
     def ftpCancel(self):
-        print 'ftpCancel'
-        self.setCurrentWidget(self.toolsView)
+        if self.currentWidget() == self.fileView:
+            self.setCurrentWidget(self.directoryView)
+        elif self.currentWidget() == self.directoryView:
+            self.setCurrentWidget(self.ftpLoginView)
+        elif self.currentWidget() == self.ftpLoginView:
+            self.setCurrentWidget(self.toolsView)
+        else:
+            self.setCurrentWidget(self.toolsView)
 
 
     def ftpDirectoryListRequest(self):
