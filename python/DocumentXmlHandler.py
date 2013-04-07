@@ -6,9 +6,9 @@ from PySide import QtXml
 
 import Document
 
-class DocumentHandler(QtXml.QXmlDefaultHandler):
+class DocumentXmlHandler(QtXml.QXmlDefaultHandler):
     def __init__(self):
-        super(DocumentHandler, self).__init__()
+        super(DocumentXmlHandler, self).__init__()
 
         self.document = Document.Document()
         self.book = Document.Book()
