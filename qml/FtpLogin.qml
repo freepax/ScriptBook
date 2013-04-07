@@ -36,7 +36,7 @@ Rectangle {
     /// Hostname line edit
     LineEdit {
         id: hostEdit
-        gradient: cg.gray;
+        inputText: ftpController.host; gradient: cg.gray;
         Component.onCompleted: { textColor = "white"; set_focus() }
         width: gridElementWidth(); height: gridElementHeight(); radius: 4
         border.color: "black"; border.width: 2
@@ -57,7 +57,7 @@ Rectangle {
     /// Port number line edit
     LineEdit {
         id: portEdit
-        gradient: cg.gray
+        inputText: ftpController.port; gradient: cg.gray
         Component.onCompleted: { textColor = "white"; set_focus() }
         width: gridElementWidth(); height: gridElementHeight(); radius: 4
         border.color: "black"; border.width: 2
