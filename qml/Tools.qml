@@ -2,6 +2,8 @@ import Qt 4.7
 
 Rectangle {
 
+    ScriptBookGradients { id: cg }
+
     NavigationButtons {
         id: buttonRow
         z: 1
@@ -14,18 +16,12 @@ Rectangle {
         id: flickable
         anchors.top: buttonRow.bottom
         width: parent.width
-        //contentWidth: parent.width
         contentHeight: 160
         height: 100
-        //flickableDirection: Flickable.VerticalFlick
-        //clip: true
-        //Column {
-        //anchors.centerIn: parent
 
         Rectangle {
-            id: one;
-            height: 40; width: parent.width;
-            color: "#222"
+            id: ftpConnect;
+            height: 40; width: parent.width; gradient: cg.onn
             Text {
                 text: "Download more books"
                 color: "steelblue"
@@ -38,21 +34,21 @@ Rectangle {
             }
         }
 
-        //Rectangle { id: two;   anchors.top: one.bottom;   height: 40; width: parent.width; color: "green" }
-            //Rectangle { id: three; anchors.top: two.bottom;   height: 40; width: parent.width; color: "blue" }
-            //Rectangle { id: four;  anchors.top: three.bottom; height: 40; width: parent.width; color: "yellow" }
+        Rectangle {
+            id: fontsSettings;
+            height: 40; width: parent.width; gradient: cg.off
+            anchors.top: ftpConnect.bottom
+            Text {
+                text: "Font settings"
+                color: "steelblue"
+                anchors.centerIn: parent
+            }
 
-        //FtpLogin {
-        //    id: one;
-        //    onHostTextChanged: console.log("Tools host text changed", hostText)
-        //    onPortTextChanged: console.log("Tools got", portText)
-
-        //    hostText: ftpController.host
-        //    portText: ftpController.port
-
-        //}
-        //FtpLogin { id: two; anchors.top: one.bottom }
-            //FtpLogin {  }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: toolsController.toolsClicked(1)
+            }
         }
-    //}
+
+    }
 }

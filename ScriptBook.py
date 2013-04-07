@@ -162,7 +162,7 @@ class ScriptBook(QtGui.QStackedWidget):
 
     def ftpCancel(self):
         print 'ftpCancel'
-        #self.setCurrentWidget(self.ftpConnectView)
+        self.setCurrentWidget(self.toolsView)
 
     def loadDocuments(self):
         documentListItems = []        
