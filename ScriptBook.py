@@ -269,6 +269,28 @@ class ScriptBook(QtGui.QStackedWidget):
             self.ftpEntryListController.downloadFile(self._filename)
 
 
+    def checkDirectory(self):
+        xmlFiles = []
+
+        directory = QtCore.QDir()
+
+        ## Go through directory content and look for xml files
+        for e in directory.entryList():
+            if e == '.' or e == '..':
+                continue
+
+            f = e.split('.')
+            if len(f) == 2:
+                if f[1] == 'xml':
+                    xmlFiles.append(e)
+
+        ## print the files
+        for f in xmlFiles:
+            print f
+
+        return xmlFiles
+
+
     def loadSettings(self):
         ## Read the settings
         settings = QtCore.QSettings()
@@ -289,16 +311,51 @@ class ScriptBook(QtGui.QStackedWidget):
         chapter = settings.value("ScriptBook/chapter")
         vers = settings.value("ScriptBook/vers")
 
+        ## Look for xml files in directory
+        xmlFiles = self.checkDirectory()
 
-        ## Check if we can load something
-        if document != None:
-            print 'document', document
-            if self.openFile(document) == True:
-                if chapter != None and book != None:
-                    if self.loadBook(int(book)) == True and self.loadChapter(int(chapter)) == True:
-                        self.setCurrentWidget(self.verseView)
-                elif book != None and self.loadBook(int(book)) == True:
-                    self.setCurrentWidget(self.chapterView)
+        ## If we don't have any xml files, load ftp login view
+        if len(xmlFiles) == 0:
+            self.setCurrentWidget(self.ftpLoginView)
+            return
+
+        ## If there are no document give we cannot preload anything
+        if document == None:
+            self.setCurrentWidget(self.documentView)
+            return
+
+        ## If we don't have the requested document we cannot preload it
+        if xmlFiles.__contains__(str(document)) == False:
+            self.setCurrentWidget(self.documentView)
+            return
+
+        ## If we fail to open the file, set document view as page
+        if self.openFile(document) == False:
+            self.setCurrentWidget(self.documentView)
+            return
+
+        ## If book is not give, load the book view
+        if book == None:
+            self.setCurrentWidget(self.bookView)
+            return
+
+        ## SHOULD GIVE PROPER ERROR PAGE HERE
+        if self.loadBook(int(book)) == False:
+            self.setCurrentWidget(self.bookView)
+            return
+
+        ## If chapter is not give, show chapter view
+        if chapter == None:
+            self.setCurrentWidget(self.chapterView)
+            return
+
+        ## SHOULD GIVE PROPER ERROR PAGE HERE
+        if self.loadChapter(int(chapter)) == False:
+            self.setCurrentWidget(self.chapterView)
+            return
+
+        self.setCurrentWidget(self.verseView)
+            
 
 
     def loadDocuments(self):
