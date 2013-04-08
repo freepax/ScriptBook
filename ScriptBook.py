@@ -9,7 +9,11 @@ from PySide import QtGui
 from PySide import QtXml
 from PySide import QtDeclarative
 
+
+## Import the python directory and import files from it
 sys.path.append('python')
+
+
 ## The XML handler
 import DocumentXmlHandler
 
@@ -30,6 +34,7 @@ from DirectoryList import *
 import FileList
 
 
+## The Controller for the navigation buttons
 class NavigationController(QtCore.QObject):
     buttonClicked = QtCore.Signal(int)
 
@@ -153,7 +158,6 @@ class ScriptBook(QtGui.QStackedWidget):
         self.directoryView.setSource(QtCore.QUrl('qml/FtpDirectoryListModel.qml'))
         self.directoryView.rootContext().setContextProperty('buttonController', self.buttonController)
 
-
         ## The ftp directory view
         self.fileView = QtDeclarative.QDeclarativeView()
         self.fileView.setWindowTitle('Ftp xml files')
@@ -191,6 +195,7 @@ class ScriptBook(QtGui.QStackedWidget):
         self.loadDocuments()
 
 
+    ## Reackt on Tool Button Click
     def toolsClicked(self, entry):
         if int(entry) == 0:
             self.setCurrentWidget(self.ftpLoginView)
@@ -205,7 +210,7 @@ class ScriptBook(QtGui.QStackedWidget):
     def ftpConnect(self, host, port):
         self.ftpEntryListController.setHostPort(host, port)
         self.ftpEntryListController.setDirectory(".")
-        self.ftpDirectoryListRequest()
+        self.ftpEntryListController.directoryList()
 
 
     def ftpCancel(self):
@@ -217,11 +222,6 @@ class ScriptBook(QtGui.QStackedWidget):
             self.setCurrentWidget(self.toolsView)
         else:
             self.setCurrentWidget(self.toolsView)
-
-
-    def ftpDirectoryListRequest(self):
-        print 'ftpDirectoryListRequest'
-        self.ftpEntryListController.directoryList()
 
 
     def ftpDirectoryListDone(self):
@@ -278,9 +278,8 @@ class ScriptBook(QtGui.QStackedWidget):
             self.ftpEntryListController.downloadFile(self._filename)
 
 
-    def checkDirectory(self):
+    def findXmlFiles(self):
         xmlFiles = []
-
         directory = QtCore.QDir()
 
         ## Go through directory content and look for xml files
@@ -288,14 +287,12 @@ class ScriptBook(QtGui.QStackedWidget):
             if e == '.' or e == '..':
                 continue
 
+            ## Split filename string on '.' and check if last part is 'xml'
             f = e.split('.')
             if len(f) == 2:
                 if f[1] == 'xml':
+                    ## XML file - append
                     xmlFiles.append(e)
-
-        ## print the files
-        for f in xmlFiles:
-            print f
 
         return xmlFiles
 
@@ -314,14 +311,13 @@ class ScriptBook(QtGui.QStackedWidget):
         self.ftpController.setPort(self.ftpPort)
         self.ftpController.onPortChanged.emit(str(self.ftpPort))
 
-
         document = settings.value("ScriptBook/document")
         book = settings.value("ScriptBook/book")
         chapter = settings.value("ScriptBook/chapter")
         vers = settings.value("ScriptBook/vers")
 
         ## Look for xml files in directory
-        xmlFiles = self.checkDirectory()
+        xmlFiles = self.findXmlFiles()
 
         ## If we don't have any xml files, load ftp login view
         if len(xmlFiles) == 0:
