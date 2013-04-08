@@ -370,8 +370,11 @@ class ScriptBook(QtGui.QStackedWidget):
                 documentListItems.append(DocumentList.DocumentListWrapper(str(count), str(entry.size()), str(entry.fileName())))
                 count += 1
 
-        self.documentList = DocumentList.DocumentModel(documentListItems)
-        self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
+            self.documentList = DocumentList.DocumentModel(documentListItems)
+            self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
+
+        else:
+            print 'No XML files in directory' # TBD Inform user
 
 
     def documentClicked(self, document):
@@ -381,12 +384,16 @@ class ScriptBook(QtGui.QStackedWidget):
 
 
     def loadBook(self, book):
-        try:
-            chapterListItems = []
+        chapterListItems = []
+
+        try: ## TBD inform user - rewrite this
             books = self.document.books()
             for b in books:
                 if int(b.document_entry) == int(book):
+                    ## Book requested found
                     self.book = b
+
+                    ## Append chapters in book into chapterListItems
                     chapters = self.book.chap()
                     for c in chapters:
                         chapterListItems.append(ChapterList.ChapterListWrapper(c.no, c.verses, c.vers()[0].text))
@@ -481,13 +488,30 @@ class ScriptBook(QtGui.QStackedWidget):
         self.document = self.handler.document
 
         bookListItems = []
+        chapterListItems = []
+        verseListItems = []
 
         books = self.document.books()
         for b in books:
             bookListItems.append(BookList.BookListWrapper(b.document_entry, b.name, b.chapters))
+            
+            #chap = b.chap()
+            #for c in chap:
+            #    chapterListItems.append(ChapterList.ChapterListWrapper(c.no, c.verses, c.vers()[0].text))
+            #    verses = c.vers()
+            #    for v in verses:
+            #        verseListItems.append(VerseList.VerseListWrapper(v.number, v.text))
+            #    break
+            #break
 
         self.bookList = BookList.BookModel(bookListItems)
         self.bookView.rootContext().setContextProperty('bookListModel', self.bookList)
+
+        self.chapterList = ChapterList.ChapterModel(chapterListItems)
+        self.chapterView.rootContext().setContextProperty('chapterListModel', self.chapterList)
+
+        self.verseList = VerseList.VerseModel(verseListItems)
+        self.verseView.rootContext().setContextProperty('verseListModel', self.verseList)
 
         self.setWindowTitle(str(("ScriptBook %s" % self.document.description)))
 
