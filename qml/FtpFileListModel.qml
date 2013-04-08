@@ -20,7 +20,7 @@ Item {
     ListView {
         id: pythonList
         model: fileListModel
-        width: parent.width; height: parent.height - root.buttonHeight
+        width: parent.width; height: parent.height - root.buttonHeight - buttonRow.button_height()
         anchors.top: buttonRow.bottom
 
         delegate: Component {

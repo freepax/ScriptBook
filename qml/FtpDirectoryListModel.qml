@@ -19,7 +19,7 @@ Item {
     ListView {
         id: pythonList
         model: directoryListModel
-        width: parent.width; height: parent.height - root.buttonHeight
+        width: parent.width; height: root.height - (root.buttonHeight + buttonRow.button_height())
         anchors.top: buttonRow.bottom
 
         delegate: Component {
@@ -57,7 +57,7 @@ Item {
 
     PushButton {
         id: cancelButton
-        //z: 1
+        z: 1
         text: "Back"; textColor: "steelblue"
         width: root.width; height: root.buttonHeight; radius: 4
         border.color: "black"; border.width: 2
