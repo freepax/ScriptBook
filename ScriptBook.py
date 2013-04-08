@@ -151,6 +151,7 @@ class ScriptBook(QtGui.QStackedWidget):
         self.directoryView.rootContext().setContextProperty('directoryListModel', self.directoryList)
         self.directoryView.rootContext().setContextProperty('ftpController', self.ftpController)
         self.directoryView.setSource(QtCore.QUrl('qml/FtpDirectoryListModel.qml'))
+        self.directoryView.rootContext().setContextProperty('buttonController', self.buttonController)
 
 
         ## The ftp directory view
@@ -164,6 +165,7 @@ class ScriptBook(QtGui.QStackedWidget):
         self.fileView.rootContext().setContextProperty('fileListModel', self.fileList)
         self.fileView.rootContext().setContextProperty('ftpController', self.ftpController)
         self.fileView.setSource(QtCore.QUrl('qml/FtpFileListModel.qml'))
+        self.fileView.rootContext().setContextProperty('buttonController', self.buttonController)
 
 
         ## Add the book, chapter and verse view's
@@ -446,12 +448,14 @@ class ScriptBook(QtGui.QStackedWidget):
 
             ## Write bookmark to settings
             settings = QtCore.QSettings()
-            settings.setValue("ScriptBook/chapter", chapter)
-            settings.setValue("ScriptBook/book", self.book.document_entry)
+            settings.setValue("ScriptBook/verse", "1")                       ## Reset verse to first vers
+            settings.setValue("ScriptBook/chapter", chapter)                 ## Write chapter
+            settings.setValue("ScriptBook/book", self.book.document_entry)   ## Book is not stored before a chapter is choosen
 
 
     def verseClicked(self, verse):
         ## Write the verse to settings (needed ?)
+        ## Note what verse was clicked (we wind to this place at restore) - do this more dynamic (onContenYChanged ?)
         settings = QtCore.QSettings()
         settings.setValue("ScriptBook/verse", verse)
 
@@ -525,6 +529,9 @@ class ScriptBook(QtGui.QStackedWidget):
         ## Write the filename
         settings = QtCore.QSettings()
         settings.setValue("ScriptBook/document", filename)
+        settings.setValue("ScriptBook/book", None)
+        settings.setValue("ScriptBook/chapter", None)
+        settings.setValue("ScriptBook/verse", None)
 
         return True
 

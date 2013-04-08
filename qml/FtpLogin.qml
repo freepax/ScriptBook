@@ -25,13 +25,23 @@ Rectangle {
         return 40
     }
 
+
+    NavigationButtons {
+        id: buttonRow
+        z: 1
+        anchors.top: root.top
+        width: parent.width; height: button_height()
+        onButtonClicked: buttonController.buttonClicked(button)
+    }
+
+
     /// Hostname text label
     TextLabel {
         id: textLabel
         gradient: cg.onn;
         height: gridElementHeight(); width: gridElementWidth();
         text: "Host"; textColor: "white"; borderColor: "black"; borderWidth: 2
-        anchors.top: root.top; anchors.left: root.left
+        anchors.top: buttonRow.bottom; anchors.left: root.left
     }
 
     /// Hostname line edit
@@ -43,7 +53,7 @@ Rectangle {
         border.color: "black"; border.width: 2
         KeyNavigation.tab: portEdit.focusItem
         onSendMessage: connect_to_server()
-        anchors.top: root.top; anchors.right: root.right
+        anchors.top: buttonRow.bottom; anchors.right: root.right
     }
 
     /// Port number text label

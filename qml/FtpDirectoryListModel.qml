@@ -8,12 +8,19 @@ Item {
 
     ScriptBookGradients { id: cg }
 
+    NavigationButtons {
+        id: buttonRow
+        z: 1
+        anchors.top: root.top
+        width: parent.width; height: button_height()
+        onButtonClicked: buttonController.buttonClicked(button)
+    }
 
     ListView {
         id: pythonList
         model: directoryListModel
         width: parent.width; height: parent.height - root.buttonHeight
-        anchors.top: root.top
+        anchors.top: buttonRow.bottom
 
         delegate: Component {
 
@@ -51,7 +58,7 @@ Item {
     PushButton {
         id: cancelButton
         //z: 1
-        text: "Cancel"; textColor: "steelblue"
+        text: "Back"; textColor: "steelblue"
         width: root.width; height: root.buttonHeight; radius: 4
         border.color: "black"; border.width: 2
         anchors.top: pythonList.bottom
