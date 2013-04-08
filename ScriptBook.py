@@ -10,16 +10,23 @@ from PySide import QtXml
 from PySide import QtDeclarative
 
 sys.path.append('python')
-import Document
-import BookList
-import ChapterList
-import VerseList
+## The XML handler
 import DocumentXmlHandler
-import DocumentList
-import ToolsController
-import FtpController
-import FtpEntryListController
-import DirectoryList
+
+## Document class defenition
+from Document import *
+
+## The controllers
+from ToolsController import *
+from FtpController import *
+from FtpEntryListController import *
+
+## The list view's Model, Wrapper and Controller
+from BookList import *
+from ChapterList import *
+from VerseList import *
+from DocumentList import *
+from DirectoryList import *
 import FileList
 
 
@@ -36,7 +43,7 @@ class NavigationController(QtCore.QObject):
 class ScriptBook(QtGui.QStackedWidget):
     def __init__(self, parent=None):
         super(ScriptBook, self).__init__(parent)
-        self.document = Document.Document()
+        self.document = Document()
         self.handler = DocumentXmlHandler.DocumentXmlHandler()
 
         ## Set values for the store/restore settings system
@@ -49,16 +56,16 @@ class ScriptBook(QtGui.QStackedWidget):
         self.buttonController.buttonClicked.connect(self.buttonClicked)
 
         ## The tools controller
-        self.toolsController = ToolsController.ToolsController()
+        self.toolsController = ToolsController()
         self.toolsController.toolsClicked.connect(self.toolsClicked)
 
         ## The ftp login controller
-        self.ftpController = FtpController.FtpController()
+        self.ftpController = FtpController()
         self.ftpController.connectSignal.connect(self.ftpConnect)
         self.ftpController.cancelSignal.connect(self.ftpCancel)
 
         ## The ftp entry list controller
-        self.ftpEntryListController = FtpEntryListController.FtpEntryListController()
+        self.ftpEntryListController = FtpEntryListController()
         self.ftpEntryListController.ftpDirectoryListDone.connect(self.ftpDirectoryListDone)
         self.ftpEntryListController.ftpFileListDone.connect(self.ftpFileListDone)
         self.ftpEntryListController.ftpDownloadDone.connect(self.ftpDownloadDone)
@@ -72,11 +79,11 @@ class ScriptBook(QtGui.QStackedWidget):
         self.documentView = QtDeclarative.QDeclarativeView()
         self.documentView.setWindowTitle('Documents')
         self.documentView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-        self.documentController = DocumentList.DocumentController()
+        self.documentController = DocumentController()
         self.documentController.documentClicked.connect(self.documentClicked)
         self.documentView.rootContext().setContextProperty('controller', self.documentController)
         self.documentView.rootContext().setContextProperty('buttonController', self.buttonController)
-        self.documentList = DocumentList.DocumentModel([])
+        self.documentList = DocumentModel([])
         self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
         self.documentView.setSource(QtCore.QUrl('qml/DocumentListModel.qml'))
 
@@ -85,11 +92,11 @@ class ScriptBook(QtGui.QStackedWidget):
         self.bookView = QtDeclarative.QDeclarativeView()
         self.bookView.setWindowTitle('Books')
         self.bookView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-        self.bookController = BookList.BookController()
+        self.bookController = BookController()
         self.bookController.bookClicked.connect(self.bookClicked)
         self.bookView.rootContext().setContextProperty('controller', self.bookController)
         self.bookView.rootContext().setContextProperty('buttonController', self.buttonController)
-        self.bookList = BookList.BookModel([])
+        self.bookList = BookModel([])
         self.bookView.rootContext().setContextProperty('bookListModel', self.bookList)
         self.bookView.setSource(QtCore.QUrl('qml/BookListModel.qml'))
 
@@ -97,11 +104,11 @@ class ScriptBook(QtGui.QStackedWidget):
         self.chapterView = QtDeclarative.QDeclarativeView()
         self.chapterView.setWindowTitle('Chapter')
         self.chapterView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-        self.chapterController = ChapterList.ChapterController()
+        self.chapterController = ChapterController()
         self.chapterController.chapterClicked.connect(self.chapterClicked)
         self.chapterView.rootContext().setContextProperty('controller', self.chapterController)
         self.chapterView.rootContext().setContextProperty('buttonController', self.buttonController)
-        self.chapterList = ChapterList.ChapterModel([])
+        self.chapterList = ChapterModel([])
         self.chapterView.rootContext().setContextProperty('chapterListModel', self.chapterList)
         self.chapterView.setSource(QtCore.QUrl('qml/ChapterListModel.qml'))
 
@@ -109,11 +116,11 @@ class ScriptBook(QtGui.QStackedWidget):
         self.verseView = QtDeclarative.QDeclarativeView()
         self.verseView.setWindowTitle('Verse')
         self.verseView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-        self.verseController = VerseList.VerseController()
+        self.verseController = VerseController()
         self.verseController.verseClicked.connect(self.verseClicked)
         self.verseView.rootContext().setContextProperty('controller', self.verseController)
         self.verseView.rootContext().setContextProperty('buttonController', self.buttonController)
-        self.verseList = VerseList.VerseModel([])
+        self.verseList = VerseModel([])
         self.verseView.rootContext().setContextProperty('verseListModel', self.verseList)
         self.verseView.setSource(QtCore.QUrl('qml/VerseListModel.qml'))
 
@@ -137,10 +144,10 @@ class ScriptBook(QtGui.QStackedWidget):
         self.directoryView = QtDeclarative.QDeclarativeView()
         self.directoryView.setWindowTitle('Ftp directories')
         self.directoryView.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-        self.directoryController = DirectoryList.DirectoryController()
+        self.directoryController = DirectoryController()
         self.directoryController.directoryClicked.connect(self.directoryClicked)
         self.directoryView.rootContext().setContextProperty('controller', self.directoryController)
-        self.directoryList = DirectoryList.DirectoryModel([])
+        self.directoryList = DirectoryModel([])
         self.directoryView.rootContext().setContextProperty('directoryListModel', self.directoryList)
         self.directoryView.rootContext().setContextProperty('ftpController', self.ftpController)
         self.directoryView.setSource(QtCore.QUrl('qml/FtpDirectoryListModel.qml'))
@@ -222,10 +229,10 @@ class ScriptBook(QtGui.QStackedWidget):
         #print 'directories', directories
         if len(directories) > int(0):
             for d in directories:
-                directoryListItems.append(DirectoryList.DirectoryListWrapper(str(d)))
+                directoryListItems.append(DirectoryListWrapper(str(d)))
                 print d
 
-            self.directoryList = DirectoryList.DirectoryModel(directoryListItems)
+            self.directoryList = DirectoryModel(directoryListItems)
             self.directoryView.rootContext().setContextProperty('directoryListModel', self.directoryList)
             self.setCurrentWidget(self.directoryView)
 
@@ -367,10 +374,10 @@ class ScriptBook(QtGui.QStackedWidget):
         if len(dirList) > 0:
             count = int(1)
             for entry in directory.entryInfoList(dirFilter):
-                documentListItems.append(DocumentList.DocumentListWrapper(str(count), str(entry.size()), str(entry.fileName())))
+                documentListItems.append(DocumentListWrapper(str(count), str(entry.size()), str(entry.fileName())))
                 count += 1
 
-            self.documentList = DocumentList.DocumentModel(documentListItems)
+            self.documentList = DocumentModel(documentListItems)
             self.documentView.rootContext().setContextProperty('documentListModel', self.documentList)
 
         else:
@@ -396,10 +403,10 @@ class ScriptBook(QtGui.QStackedWidget):
                     ## Append chapters in book into chapterListItems
                     chapters = self.book.chap()
                     for c in chapters:
-                        chapterListItems.append(ChapterList.ChapterListWrapper(c.no, c.verses, c.vers()[0].text))
+                        chapterListItems.append(ChapterListWrapper(c.no, c.verses, c.vers()[0].text))
                     break
 
-            self.chapterList = ChapterList.ChapterModel(chapterListItems)
+            self.chapterList = ChapterModel(chapterListItems)
             self.chapterView.rootContext().setContextProperty('chapterListModel', self.chapterList)
             return True
         except:
@@ -421,11 +428,11 @@ class ScriptBook(QtGui.QStackedWidget):
                     v = c.vers()
                     for i in v:
                         textstring = str("%s %s" % (str(i.number), i.text))
-                        verseListItems.append(VerseList.VerseListWrapper(int(i.number), textstring))
-                        #verseListItems.append(VerseList.VerseListWrapper(int(i.number), str(i.text)))
+                        verseListItems.append(VerseListWrapper(int(i.number), textstring))
+                        #verseListItems.append(VerseListWrapper(int(i.number), str(i.text)))
                     break
 
-            self.verseList = VerseList.VerseModel(verseListItems)
+            self.verseList = VerseModel(verseListItems)
             self.verseView.rootContext().setContextProperty('verseListModel', self.verseList)
             return True
         except:
@@ -493,24 +500,24 @@ class ScriptBook(QtGui.QStackedWidget):
 
         books = self.document.books()
         for b in books:
-            bookListItems.append(BookList.BookListWrapper(b.document_entry, b.name, b.chapters))
+            bookListItems.append(BookListWrapper(b.document_entry, b.name, b.chapters))
             
             #chap = b.chap()
             #for c in chap:
-            #    chapterListItems.append(ChapterList.ChapterListWrapper(c.no, c.verses, c.vers()[0].text))
+            #    chapterListItems.append(ChapterListWrapper(c.no, c.verses, c.vers()[0].text))
             #    verses = c.vers()
             #    for v in verses:
-            #        verseListItems.append(VerseList.VerseListWrapper(v.number, v.text))
+            #        verseListItems.append(VerseListWrapper(v.number, v.text))
             #    break
             #break
 
-        self.bookList = BookList.BookModel(bookListItems)
+        self.bookList = BookModel(bookListItems)
         self.bookView.rootContext().setContextProperty('bookListModel', self.bookList)
 
-        self.chapterList = ChapterList.ChapterModel(chapterListItems)
+        self.chapterList = ChapterModel(chapterListItems)
         self.chapterView.rootContext().setContextProperty('chapterListModel', self.chapterList)
 
-        self.verseList = VerseList.VerseModel(verseListItems)
+        self.verseList = VerseModel(verseListItems)
         self.verseView.rootContext().setContextProperty('verseListModel', self.verseList)
 
         self.setWindowTitle(str(("ScriptBook %s" % self.document.description)))
