@@ -61,6 +61,7 @@ class ScriptBook(QtGui.QStackedWidget):
         self.ftpEntryListController = FtpEntryListController.FtpEntryListController()
         self.ftpEntryListController.ftpDirectoryListDone.connect(self.ftpDirectoryListDone)
         self.ftpEntryListController.ftpFileListDone.connect(self.ftpFileListDone)
+        self.ftpEntryListController.ftpDownloadDone.connect(self.ftpDownloadDone)
 
         ## Set up UI components
         self.setupUI()
@@ -250,9 +251,22 @@ class ScriptBook(QtGui.QStackedWidget):
             self.setCurrentWidget(self.fileView)
 
 
+    def ftpDownloadDone(self):
+        print 'ftpDownloadDone'
+        self._downloadedFile = self.ftpEntryListController.getFile()
+        #print self._downloadedFile
+        print len(self._downloadedFile)
+
+        f = open(self._filename, "w")
+        f.write(self._downloadedFile)
+        f.close()
+
 
     def fileClicked(self, name):
         print 'fileClicked', name
+        if name != str(""):
+            self._filename = name
+            self.ftpEntryListController.downloadFile(self._filename)
 
 
     def loadSettings(self):

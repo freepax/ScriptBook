@@ -8,6 +8,8 @@ class FtpEntryListController(QtCore.QObject):
     ftpDirectoryListDone = QtCore.Signal()
     ftpChdirDone = QtCore.Signal()
     ftpFileListDone = QtCore.Signal()
+    ftpDownloadDone = QtCore.Signal()
+
 
     _list = []
     _command = int(-1)
@@ -18,6 +20,9 @@ class FtpEntryListController(QtCore.QObject):
     _host = str("")
     _port = int(0)
     _directory = str(".")
+
+    _filename = str("")
+    _targetFile = str("")
 
 
     def __init__(self, parent = None):
@@ -32,8 +37,15 @@ class FtpEntryListController(QtCore.QObject):
         self.ftp.listInfo.connect(self.listInfo)
 
 
+    ## Provide the directory or file list (should be a signal)
     def list(self):
         return self._list
+
+
+    ## Provide the downloaded file (should be a signal(str))
+    def getFile(self):
+        self._filename = str("")
+        return self._targetFile
 
 
     def setHostPort(self, host, port):
@@ -62,22 +74,32 @@ class FtpEntryListController(QtCore.QObject):
         self.ftp.login()
 
 
+    def downloadFile(self, filename):
+        print 'downloadFile', filename
+        if filename != str(""):
+            self._targetFile = str("")
+            self._command = 2
+            self._filename = filename
+            self.ftp.connectToHost(str(self._host), int(self._port))
+            self.ftp.login()
+
+
     def disconnectSlot(self):
         self.ftp.close()
 
 
     def stateChanged(self, arg):
-        #print 'stateChanged', arg, self._command
         if self.ftp.state() == QtNetwork.QFtp.Connected:
             ## Connected - get ftp listing 
-            #print 'stateChanged: connected'
             if self._command == 0:
                 self._state = int(0)
                 self._commandID = self.ftp.cd(self._directory)
             elif self._command == 1:
                 self._state = int(0)
                 self._commandID = self.ftp.cd(self._directory)
-                
+            elif self._command == 2:
+                self._state = int(0)
+                self._commandID = self.ftp.cd(self._directory)
 
         #elif self.ftp.state() == QtNetwork.QFtp.Connecting:
         #    print 'stateChanged: Connecting', self._command
@@ -90,17 +112,19 @@ class FtpEntryListController(QtCore.QObject):
                 self.ftpDirectoryListDone.emit()
             elif self._command == 1:
                 self.ftpFileListDone.emit()
+            elif self._command == 2:
+                self.ftpDownloadDone.emit()
 
 
     def commandStarted(self, arg):
         if arg == self._commandID:
             self._list = []
+            self._file = ""
             #print 'commandStarted: commandId', self._commandID
 
 
     def commandFinished(self, arg):
         if arg == self._commandID:
-            #print 'commandFinished: ID match'
             ## Directory list
             if self._command == int(0):
                 if self._state == int(0):
@@ -125,15 +149,25 @@ class FtpEntryListController(QtCore.QObject):
                     self._state = -1
                     self.disconnectSlot()
 
-            #for f in self.fileList:
-            #    self.getFile(f)
+            ## Get file
+            elif self._command == int(2):
+                if self._state == int(0):
+                    self._state = 1
+                    self._commandID = self.ftp.get(self._filename)
+                elif self._state == int(1):
+                    self._state = -1
+                    self.disconnectSlot()
+                else:
+                    self._state = -1
+                    self.disconnectSlot()
 
             else:
                 self.disconnectSlot()
 
 
     def readyRead(self):
-        print 'readyRead', self.ftp.bytesAvailable(), " content", str(self.ftp.readAll())
+        print 'readyRead', self.ftp.bytesAvailable()
+        self._targetFile += str(self.ftp.readAll())
 
 
     def listInfo(self, info):
