@@ -1,4 +1,4 @@
-import Qt 4.7
+import QtQuick 1.0
 
 
 Item {
@@ -9,6 +9,7 @@ Item {
         anchors.top: parent.top
         width: parent.width; height: button_height()
         onButtonClicked: buttonController.buttonClicked(button)
+        buttonNumber: buttonController.gradient
     }
 
     ListView {
@@ -49,7 +50,10 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: { controller.clicked(bookListModel, model.bookItem) }
+                        onClicked: {
+                            controller.clicked(bookListModel, model.bookItem)
+                            buttonController.buttonClicked(2)
+                        }
                     }
                 }
             }

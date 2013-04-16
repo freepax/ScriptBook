@@ -1,4 +1,4 @@
-import Qt 4.7
+import QtQuick 1.0
 
 
 Item {
@@ -10,6 +10,7 @@ Item {
         anchors.top: parent.top
         width: parent.width; height: button_height()
         onButtonClicked: buttonController.buttonClicked(button)
+        buttonNumber: buttonController.gradient
     }
 
     ListView {

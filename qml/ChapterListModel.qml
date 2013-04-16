@@ -1,4 +1,4 @@
-import Qt 4.7
+import QtQuick 1.0
 
 
 Item {
@@ -9,6 +9,7 @@ Item {
         anchors.top: parent.top
         width: parent.width; height: button_height()
         onButtonClicked: buttonController.buttonClicked(button)
+        buttonNumber: buttonController.gradient
     }
 
     ListView {
@@ -31,7 +32,7 @@ Item {
 
                     Text {
                         id: chapterText
-                        text: "Chapter  " + model.chapterItem.no
+                        text: "Chapter  " + model.chapterItem.no + "  ("+ model.chapterItem.verses + "  vers)"
                         color: "steelblue"
                         width: parent.width - 10; height: 30
                         font.pointSize: 11
@@ -50,7 +51,10 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: { controller.clicked(chapterListModel, model.chapterItem) }
+                        onClicked: {
+                            controller.clicked(chapterListModel, model.chapterItem)
+                            buttonController.buttonClicked(3)
+                        }
                     }
                 }
             }

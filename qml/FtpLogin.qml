@@ -1,4 +1,4 @@
-import Qt 4.7
+import QtQuick 1.0
 
 
 Rectangle {
@@ -80,7 +80,7 @@ Rectangle {
 
     PushButton {
         id: cancelButton
-        text: "Cancel"; textColor: "steelblue"
+        text: "Cancel"; textColor: "steelblue"; gradient: cg.onn
         width: gridElementWidth(); height: gridElementHeight(); radius: 4
         border.color: "black"; border.width: 2
         KeyNavigation.tab: hostEdit.focusItem
@@ -90,7 +90,7 @@ Rectangle {
 
     PushButton {
         id: connectButton
-        text: "Connect"; textColor: "steelblue"
+        text: "Connect"; textColor: "steelblue"; gradient: cg.onn
         width: gridElementWidth(); height: gridElementHeight(); radius: 4
         border.color: "black"; border.width: 2
         KeyNavigation.tab: hostEdit.focusItem

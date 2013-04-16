@@ -1,4 +1,4 @@
-import Qt 4.7
+import QtQuick 1.0
 
 
 Item {
@@ -58,7 +58,7 @@ Item {
     PushButton {
         id: cancelButton
         z: 1
-        text: "Back"; textColor: "steelblue"
+        text: "Back"; textColor: "steelblue"; gradient: cg.onn
         width: root.width; height: root.buttonHeight; radius: 4
         border.color: "black"; border.width: 2
         anchors.top: pythonList.bottom

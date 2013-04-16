@@ -37,6 +37,23 @@ class Chapter():
         for i in self.__verses:
             i.printVers()
 
+    def checkChapter(self):
+        ## Check that the chapter contains the number of verses as it clames
+        if len(self.__verses) != int(self.verses):
+            print 'Chapter::checkChapter Verses entries check failed'
+            return False
+
+        ## Check all the verses
+        count = int(1)
+        for vers in self.__verses:
+            ## Check that the vers number increases from vers to the next
+            if int(vers.number) != count:
+                print 'Chapter::checkChapter: verse number check failed (verse', count, ')', vers.number
+                return False
+
+            ## Increase the verse counter
+            count = int(count + 1)
+
 
 class Book():
     __chapters = []
@@ -62,6 +79,27 @@ class Book():
         print 'Book', self.name
         for i in self.__chapters:
             i.printVerses()
+
+    def checkBook(self):
+        print 'Book::checkBook len:', len(self.__chapters), "chapters", self.chapters
+        if len(self.__chapters) != int(self.chapters):
+            print 'Book::checkBook: Chapters error'
+            return False
+
+        count = int(1)
+        for chapter in self.__chapters:
+            ## Check that the chapter number is incrementing correctly from chapter to the next
+            if int(chapter.no) != int(count):
+                print 'Book::checkBook: Chapter number error (', count, ')', chapter.no
+                return False
+
+            ## Check this chapter
+            elif chapter.checkChapter() == False:
+                print 'Book::checkBook: checkChapter failed(', count, ')'
+                return False
+
+            ## Increment the chapter counter
+            count = int(count + 1)
 
 
 class Document():
@@ -89,3 +127,25 @@ class Document():
         for i in self.__books:
             i.printBook()
 
+    def checkDocument(self):
+        ## Check that the book contains as many books as it clames
+        if len(self.__books) != int(self.entries):
+            print 'Document::checkDocument Books and Entries missmatch in document'
+            return False
+
+        ## Go through all books
+        count = int(1)
+        for book in self.__books:
+            
+            ## Check that the document entry increases correctly from entry to the next
+            if int(book.document_entry) != int(count):
+                print 'Document::checkDocument: book entry error (', count, ')', book.document_entry
+                return False
+
+            ## Check the current book
+            elif book.checkBook() == False:
+                print 'Document::checkDocument: book.checkBook failed'
+                return False
+
+            ## Increment book counter
+            count = int(count + 1)

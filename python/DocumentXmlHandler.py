@@ -23,7 +23,7 @@ class DocumentXmlHandler(QtXml.QXmlDefaultHandler):
 
     def startElement(self, namespaceURI, localName, qName, attributes):
         if not self.documentStartTag and qName != 'document':
-            self.errorStr = "The file is not an ScriptBook file."
+            self.errorStr = str("Start Element: Not a script book file")
             return False
 
         if qName == 'document':
@@ -49,11 +49,15 @@ class DocumentXmlHandler(QtXml.QXmlDefaultHandler):
             self.vers.number = attributes.value('no')
             self.vers.text = attributes.value('text')
 
+        else:
+            self.errorStr = str("Start Element: unknown qName")
+
         return True
 
 
     def endElement(self, namespaceURI, localName, qName):
         if qName == 'document':
+            self.errorStr = str("End element qName not a script book")
             self.documentStartTag = False
 
         elif qName == 'book':
@@ -71,6 +75,9 @@ class DocumentXmlHandler(QtXml.QXmlDefaultHandler):
         elif qName == 'vers':
             self.chapter.appendVers(self.vers)
             self.vers = Document.Vers()
+
+        else:
+            self.errorStr = str("End element: Unknown qName")
 
         return True
 

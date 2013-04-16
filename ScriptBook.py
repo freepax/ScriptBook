@@ -38,11 +38,25 @@ import FileList
 class NavigationController(QtCore.QObject):
     buttonClicked = QtCore.Signal(int)
 
+    _button = int(-1)
+
+    def __init__(self, parent = None):
+        super(NavigationController, self).__init__(parent)
+        self.buttonClicked.connect(self.clicked)
+
+
     @QtCore.Slot(QtCore.QObject, QtCore.QObject)
     def clicked(self, button):
         #global view, __doc__ #### view ???
-        #print "NavigationController::clicked: Button", button
-        self.buttonClicked.emit(int(button))
+        self._button = button
+        print 'NavigationController::CLICKED', button, self._button
+
+
+    def _gradient(self):
+        print 'NavigationController::_GRADIENT', self._button
+        return int(self._button)
+
+    gradient = QtCore.Property(int, _gradient, notify=buttonClicked)
 
 
 class ScriptBook(QtGui.QStackedWidget):
@@ -199,6 +213,7 @@ class ScriptBook(QtGui.QStackedWidget):
     def toolsClicked(self, entry):
         if int(entry) == 0:
             self.setCurrentWidget(self.ftpLoginView)
+            #self.buttonController.buttonClicked.emit(4)
         elif int(entry) == 1:
             print 'toolsClicked: Font settings - not implemented'
         elif int(entry) == 2:
@@ -488,11 +503,15 @@ class ScriptBook(QtGui.QStackedWidget):
         xmlInputSource = QtXml.QXmlInputSource(file)
 
         if reader.parse(xmlInputSource) == False:
-            QtGui.QMessageBox.warning(self, "ScriptBook", "Cannot read file \n%s:\n." % filename)
+            print "openFile Error:", self.handler.errorString()
+            QtGui.QMessageBox.warning(self, "ScriptBook", "Cannot parse file \n%s\n  %s\n" % (filename, self.handler.errorString()))
             return False
 
         # document stuff here
         self.document = self.handler.document
+        if self.document.checkDocument() == False:
+            print 'Loading documet failed'
+            return False
 
         bookListItems = []
         chapterListItems = []

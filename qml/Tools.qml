@@ -1,4 +1,4 @@
-import Qt 4.7
+import QtQuick 1.0
 
 Rectangle {
     color: "black"
@@ -10,6 +10,7 @@ Rectangle {
         anchors.top: parent.top
         width: parent.width; height: button_height()
         onButtonClicked: buttonController.buttonClicked(button)
+        buttonNumber: buttonController.gradient
     }
 
     Flickable {
@@ -30,7 +31,10 @@ Rectangle {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: toolsController.toolsClicked(0)
+                onClicked: {
+                    //buttonController.buttonClicked(4)
+                    toolsController.toolsClicked(0)
+                }
             }
         }
 
