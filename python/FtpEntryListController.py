@@ -9,6 +9,8 @@ class FtpEntryListController(QtCore.QObject):
     ftpChdirDone = QtCore.Signal()
     ftpFileListDone = QtCore.Signal()
     ftpDownloadDone = QtCore.Signal()
+    ftpDownloading = QtCore.Signal()
+    ftpReadyRead = QtCore.Signal(int)
 
 
     _list = []
@@ -166,9 +168,10 @@ class FtpEntryListController(QtCore.QObject):
 
 
     def readyRead(self):
-        print 'readyRead', self.ftp.bytesAvailable()
+        #print 'readyRead', self.ftp.bytesAvailable()
+        self.ftpReadyRead.emit(self.ftp.bytesAvailable())
         self._targetFile += str(self.ftp.readAll())
-
+        self.ftpDownloading.emit()
 
     def listInfo(self, info):
         if info.isDir() == True:

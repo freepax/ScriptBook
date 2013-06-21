@@ -8,9 +8,10 @@ Rectangle {
     property color textColor: "steelblue"
     property color borderColor: "black"
     property int borderWidth: 2
+    property int wrap: 0
 
     border.color: textLine.borderColor; border.width: textLine.borderWidth
-    radius: 4; gradient: textLineGradient
+    radius: 4; //gradient: textLineGradient
     height: 50; width: 50;
 
     Gradient {
@@ -20,5 +21,5 @@ Rectangle {
         GradientStop { position: 1.0; color: "#6789ab"}
     }
 
-    Text { text: textLine.text; color: textLine.textColor; anchors.centerIn: parent }
+    Text { text: textLine.text; wrapMode: textLine.wrap; color: textLine.textColor; anchors.centerIn: parent }
 }

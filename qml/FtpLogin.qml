@@ -7,6 +7,7 @@ Rectangle {
 
     ScriptBookGradients { id: cg }
 
+
     property alias hostText: hostEdit.inputText
     property alias portText: portEdit.inputText
 
@@ -97,5 +98,4 @@ Rectangle {
         onTrigger: connect_to_server()
         anchors.bottom: root.bottom; anchors.right: root.right
     }
-
 }
